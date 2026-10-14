@@ -39,7 +39,7 @@ This project demonstrates expertise in modern frontend engineering and mathemati
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/desh/geometry-solver.git
+    git clone https://github.com/tanmayd-dev/geometry-solver.git
     cd geometry-solver
     ```
 
