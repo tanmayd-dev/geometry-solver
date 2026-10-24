@@ -176,6 +176,12 @@ export const deleteEntity = (state: GeometryState, id: ID): void => {
         if (circle.centerId) removeFromParentChildren(state, circle.centerId, id);
         circle.pointIds.forEach(pId => removeFromParentChildren(state, pId, id));
         state.circles.delete(id);
+        // The circumcircle center is auto-created and owned by the circle:
+        // once the circle is gone it would be orphaned, so cascade it too.
+        // (Centers of RADIUS circles are user points and must survive.)
+        if (circle.type === 'THREE_POINTS' && circle.centerId) {
+            deleteEntity(state, circle.centerId);
+        }
     }
 };
 

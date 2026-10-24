@@ -190,19 +190,29 @@ describe('cascading delete', () => {
         expect(p2.childrenIds).toEqual([]);
     });
 
-    it('deleting one boundary point of a three-point circle removes the circle; the center point remains orphaned', () => {
+    it('deleting one boundary point of a three-point circle removes the circle and its auto-created center', () => {
         const p1 = addPoint(state, 0, 0);
         const p2 = addPoint(state, 4, 0);
         const p3 = addPoint(state, 0, 4);
         const { centerPoint } = addCircleThreePoints(state, p1.id, p2.id, p3.id)!;
         deleteEntity(state, p1.id);
         expect(state.circles.size).toBe(0);
-        // NOTE: the auto-created center point evidence currently survives as an orphan
-        // (it is only reachable from the circle, not from the boundary points).
-        // Documented as-is; see PR notes for a suggested follow-up.
-        expect(state.points.has(centerPoint.id)).toBe(true);
-        expect(state.points.size).toBe(3); // p2, p3 and the orphaned center
-        expect(centerPoint.childrenIds).toEqual([]);
+        // The center was created for this circle, so the cascade must reach it too
+        expect(state.points.has(centerPoint.id)).toBe(false);
+        expect(state.points.size).toBe(2); // p2 and p3 remain
+        expect(p2.childrenIds).toEqual([]);
+        expect(p3.childrenIds).toEqual([]);
+    });
+
+    it('deleting a boundary point of a radius circle keeps the user-created center', () => {
+        const center = addPoint(state, 0, 0);
+        const onEdge = addPoint(state, 4, 0);
+        addCircleCircumference(state, center.id, onEdge.id);
+        deleteEntity(state, onEdge.id);
+        // One point still on the circle rim would be a user point; the center
+        // definitely is, so it must survive the circle's cascade.
+        expect(state.circles.size).toBe(0);
+        expect(state.points.has(center.id)).toBe(true);
     });
 
     it('deleting a circle center removes only the circle, not boundary points', () => {
