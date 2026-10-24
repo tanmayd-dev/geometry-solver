@@ -12,6 +12,8 @@ import {
     addCircleThreePoints,
     deleteEntity,
     setActiveTool,
+    addToMeasureHistory,
+    clearMeasureHistory,
     findAllIntersections,
 } from './state';
 import type { GeometryState } from './types';
@@ -204,6 +206,20 @@ describe('cascading delete', () => {
         expect(p3.childrenIds).toEqual([]);
     });
 
+    it('deleting a three-point circle directly by its own id cascades its auto-created center', () => {
+        const p1 = addPoint(state, 0, 0);
+        const p2 = addPoint(state, 4, 0);
+        const p3 = addPoint(state, 0, 4);
+        const { circle, centerPoint } = addCircleThreePoints(state, p1.id, p2.id, p3.id)!;
+        deleteEntity(state, circle.id);
+        expect(state.circles.size).toBe(0);
+        expect(state.points.has(centerPoint.id)).toBe(false);
+        expect(state.points.size).toBe(3);
+        expect(p1.childrenIds).not.toContain(circle.id);
+        expect(p2.childrenIds).not.toContain(circle.id);
+        expect(p3.childrenIds).not.toContain(circle.id);
+    });
+
     it('deleting a boundary point of a radius circle keeps the user-created center', () => {
         const center = addPoint(state, 0, 0);
         const onEdge = addPoint(state, 4, 0);
@@ -215,13 +231,14 @@ describe('cascading delete', () => {
         expect(state.points.has(center.id)).toBe(true);
     });
 
-    it('deleting a circle center removes only the circle, not boundary points', () => {
+    it('deleting a circle center removes the circle and center, not boundary points', () => {
         const p1 = addPoint(state, 0, 0);
         const p2 = addPoint(state, 4, 0);
         const p3 = addPoint(state, 0, 4);
         const { centerPoint } = addCircleThreePoints(state, p1.id, p2.id, p3.id)!;
         deleteEntity(state, centerPoint.id);
         expect(state.circles.size).toBe(0);
+        expect(state.points.has(centerPoint.id)).toBe(false);
         expect(state.points.has(p1.id)).toBe(true);
         expect(state.points.has(p2.id)).toBe(true);
         expect(state.points.has(p3.id)).toBe(true);
@@ -244,6 +261,14 @@ describe('tool and measure history', () => {
         setActiveTool(state, 'CIRCLE');
         expect(state.activeTool).toBe('CIRCLE');
         expect(state.selectedIds).toEqual([]);
+        expect(state.measureHistory).toEqual([]);
+    });
+
+    it('appends and clears measure history items', () => {
+        const p = addPoint(state, 0, 0);
+        addToMeasureHistory(state, { type: 'point', id: p.id });
+        expect(state.measureHistory).toEqual([{ type: 'point', id: p.id }]);
+        clearMeasureHistory(state);
         expect(state.measureHistory).toEqual([]);
     });
 });

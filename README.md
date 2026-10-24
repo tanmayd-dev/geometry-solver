@@ -28,6 +28,7 @@ This project demonstrates expertise in modern frontend engineering and mathemati
 *   **Modular State Management**: Custom hooks and state reducers efficiently manage the complex dependency graph of geometric entities.
 *   **Mathematical Solver**: Implements numerical methods to iteratively solve systems of geometric constraints.
 *   **Separation of Concerns**: Pure presentation components separated from the heavy lifting of geometric calculations and solver logic.
+*   **Cascading Delete**: Deleting a three-point circle (directly or via any boundary point) cascades its auto-created circumcenter, destroying dependent geometry anchored on it (via `point.childrenIds`); user-owned centers of radius circles survive.
 
 ## Getting Started
 
@@ -63,6 +64,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Inspiration
 
 This project was inspired by the challenging geometry problems often found in YouTube thumbnails. Seeing so many videos featuring intricate geometric puzzles highlighted the need for a tool that can interactively model and solve them. This application exists to bridge that gap, allowing users to verify solutions and explore these problems dynamically.
+
+## License
+
+GNU General Public License v3.0 or later — see LICENSE
 
 ---
 *Built to demonstrate robust software engineering practices and passion for algorithmic challenges.*

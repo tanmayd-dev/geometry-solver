@@ -1,7 +1,8 @@
 import { defineConfig } from 'vitest/config';
 
-// Tests target the pure state/construction logic in src/state.ts,
-// which has no DOM dependencies, so a node environment suffices.
+// The node environment is deliberate (pure state logic, no DOM/canvas).
+// Future App/React tests will need jsdom or happy-dom plus merging
+// vite.config.ts (@vitejs/plugin-react) via mergeConfig.
 export default defineConfig({
   test: {
     environment: 'node',

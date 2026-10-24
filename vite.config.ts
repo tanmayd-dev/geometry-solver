@@ -16,7 +16,7 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('node_modules')) {
             if (/[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return 'vendor-react';
-            if (id.includes('paper')) return 'vendor-paper';
+            if (/[\\/]paper[\\/]/.test(id)) return 'vendor-paper';
           }
           return undefined;
         },
