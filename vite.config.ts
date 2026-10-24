@@ -9,4 +9,18 @@ const base = process.env.VITE_BASE_PATH ?? '/'
 export default defineConfig({
   base,
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      output: {
+        // Split large vendor libraries into cached chunks instead of one big bundle.
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (/[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return 'vendor-react';
+            if (id.includes('paper')) return 'vendor-paper';
+          }
+          return undefined;
+        },
+      },
+    },
+  },
 })
